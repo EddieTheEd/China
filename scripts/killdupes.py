@@ -1,3 +1,5 @@
+import sys
+
 def removeDuplicates(filePath):
     uniqueLines = set()
     fileName, fileExtension = filePath.rsplit('.', 1)
@@ -12,6 +14,5 @@ def removeDuplicates(filePath):
     with open(f"{fileName}prep.{fileExtension}", 'w') as file:
         file.write('\n'.join(uniqueLines))
 
-filePath = "../data/" + input("Please input the text file path.\n\n") 
+filePath = "../data/" + sys.argv[1] 
 removeDuplicates(filePath)
-print("Finished checking duplicates for path " + filePath)

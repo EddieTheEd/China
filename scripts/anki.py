@@ -2,6 +2,7 @@ from gtts import gTTS
 import requests
 import base64
 import os
+import sys
 
 def readData(filePath):
     with open(filePath, 'r') as file:
@@ -123,7 +124,7 @@ def addAudioCardToDeck(deckName, front, back):
         audioData = base64.b64encode(audioFile.read()).decode('utf-8')
 
     # Add audio file to Anki's media folder
-    media_folder_path = "/home/edwardhuynh/.local/share/Anki2/User 1/collection.media/"
+    media_folder_path = "/home/edwardhuynh/.local/share/Anki2/Chinese/collection.media/"
     audio_filename = f"front_audio_{hash(audioData)}.mp3"
     audio_filepath = os.path.join(media_folder_path, audio_filename)
 
@@ -160,9 +161,9 @@ def addAudioCardToDeck(deckName, front, back):
 
 if __name__ == "__main__":
 
-    deckNameToCreate = input("What do you want the anki file to be called?\n\n")
+    deckNameToCreate = sys.argv[1]
     
-    path = "../data/" + input("Which text file do you want to use? (e.g. output.txt)\n\n")
+    path = "../data/" + sys.argv[2]
 
     lines = readData(path)
     inputDict = createDictionary(lines)
