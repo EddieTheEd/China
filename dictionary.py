@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QScrollArea, QShortcut, QMessageBox, QHBoxLayout
 from PyQt5.QtGui import QIcon, QKeySequence
 import PyQt5.QtCore as QtCore
@@ -43,8 +44,6 @@ class ChineseTextSearch(QWidget):
         font.setPointSize(20)
         self.setFont(font)
 
-        
-        
         self.label = QLabel("Enter Chinese or English text:")
         self.entry = QLineEdit()
         self.label.setFont(font)
@@ -103,13 +102,18 @@ class ChineseTextSearch(QWidget):
 
         self.resize(1200, 500)  # Adjust window size to accommodate QWebEngineView
 
-        self.setWindowIcon(QIcon(os.path.join(os.path.expanduser('~'), 'Documents/ghp/China/stardict.svg')))
+        try:
+            self.setWindowIcon(QIcon(os.path.join(os.path.expanduser('~'), 'Documents/ghp/China/stardict.svg')))
+        except Exception as e:
+            raise e
 
         self.entry.returnPressed.connect(self.search_chinese)
 
         shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
         shortcut.activated.connect(self.close)
         
+    
+    
     def search_chinese(self):
         chinese_text = self.entry.text()
         if not chinese_text:
@@ -117,11 +121,30 @@ class ChineseTextSearch(QWidget):
             return
         
         try:
-            result = subprocess.check_output(['grep', '-E', '-i', chinese_text, os.path.join(os.path.expanduser('~'), 'Documents/ghp/China/scripts/cedict_ts.u8')], universal_newlines=True)
-            answer = modify(result)
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, 'scripts', 'cedict_ts.u8')
+            
+            if not os.path.exists(file_path):
+                self.result_label.setText("File not found.")
+                return
+            
+            with open(file_path, 'r', encoding='utf-8') as file:
+                file_contents = file.readlines()
+            
+            matching_lines = []
+            pattern = re.compile(chinese_text, re.IGNORECASE)
+            
+            for line in file_contents:
+                if pattern.search(line):
+                    matching_lines.append(line.strip())
+            
+            if matching_lines:
+                answer = modify("\n".join(matching_lines))
+            else:
+                answer = "No matching results found."
             self.result_label.setText(answer)
-        except subprocess.CalledProcessError as e:
-            self.result_label.setText("No matching results found.")
+        except Exception as e:
+            self.result_label.setText(f"An error occurred: {e}")
     
     def copy_result(self):
         result_text = self.result_label.text()
