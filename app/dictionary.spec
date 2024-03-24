@@ -5,13 +5,13 @@ a = Analysis(
     ['dictionary.py'],
     pathex=[],
     binaries=[],
-    datas=[('cedict_ts.u8', '.'), ('stardict.svg', '.')],
-    hiddenimports=[],
+    datas=[('stardict.svg', '.')],
+    hiddenimports=['PyQt5'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    noarchive=False,
+    noarchive=True,
 )
 pyz = PYZ(a.pure)
 
@@ -20,9 +20,9 @@ exe = EXE(
     a.scripts,
     a.binaries,
     a.datas,
-    [],
+    [('v', None, 'OPTION')],
     name='dictionary',
-    debug=False,
+    debug=True,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
